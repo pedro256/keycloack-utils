@@ -1,0 +1,37 @@
+version: '3.8'
+
+# sample example creating a docker compose with keycloack and postgres database for keycloack
+
+services:
+  # database postgres, database used for keycloack
+  db_kc:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloakpassword
+    ports:
+      - "5432:5432"
+    networks:
+      - keycloak-net
+
+  keycloak:
+    image: jboss/keycloak:latest
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: adminpassword
+      DB_VENDOR: POSTGRES
+      DB_ADDR: db_kc
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: keycloakpassword
+    ports:
+      - "4545:4545"
+    depends_on:
+      - db_kc
+    networks:
+      - keycloak-net
+
+networks:
+  keycloak-net:
+    driver: bridge
